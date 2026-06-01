@@ -1,0 +1,80 @@
+{
+  "info": {
+    "_postman_id": "7dbbc840-c891-4bc6-b8bd-852db187d692",
+    "name": "Rag_system_apis",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39206188"
+  },
+  "item": [
+    {
+      "name": "rag_chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"Summarize the uploaded document\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/chat",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "chat"
+          ]
+        },
+        "description": "## RAG Chat\n\nSends a natural language query to the RAG (Retrieval-Augmented Generation) powered chat endpoint. The system retrieves relevant context from the ingested knowledge base and uses it to generate an accurate, context-aware response.\n\n---\n\n### Request Body\n\n| Field   | Type   | Required | Description |\n|---------|--------|----------|-------------|\n| `query` | string | ✅ Yes   | The user's natural language query sent to the RAG system. |\n\n### Example\n\n`json\n{\n  \"query\": \"Summarize the uploaded document\"\n}\n`\n\n---\n\n### How It Works\n\n1. The query is received by the backend.\n2. The system generates embeddings for the query.\n3. A semantic similarity search is performed over the ingested document store.\n4. Relevant chunks are retrieved from Qdrant.\n5. Retrieved context is passed into the prompt pipeline.\n6. Gemini generates a grounded response using the retrieved context.\n\n---\n\n### Example Queries\n\n- Summarize the uploaded document.\n- Explain the key concepts in this PDF.\n- What are the main takeaways from the document?\n- Explain this topic in simple terms.\n- Give a concise summary of the retrieved context.\n\n---\n\n### Expected Response\n\nThe endpoint returns a context-aware response grounded in the documents previously ingested via the `/ingest` endpoint."
+      },
+      "response": []
+    },
+    {
+      "name": "rag_ingest",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/ingest",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "ingest"
+          ]
+        },
+        "description": "## RAG Ingest\n\nUploads and ingests a document into the Retrieval-Augmented Generation (RAG) pipeline.\n\nThe uploaded document is:\n\n1. Parsed and converted into raw text.\n2. Split into smaller chunks.\n3. Converted into vector embeddings.\n4. Stored inside Qdrant for semantic retrieval.\n\n---\n\n### Request Body\n\nThis request uses `multipart/form-data` encoding.\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| `file` | File | Yes | Document file to ingest into the vector database. |\n\n---\n\n### Supported File Types\n\nCurrently supported:\n\n- PDF\n\n---\n\n### Example Workflow\n\n1. Upload a document using `/ingest`\n2. The document gets chunked and embedded\n3. Embeddings are stored in Qdrant\n4. Query the knowledge base using `/chat`\n\n---\n\n### Example Request\n\n`http\nPOST http://127.0.0.1:8000/ingest\nContent-Type: multipart/form-data\n`\n\nAttach a PDF file in the `file` field.\n\n---\n\n### Expected Response\n\n`json\n{\n  \"message\": \"Document ingested successfully\"\n}\n`\n\n---\n\n### Related Endpoints\n\n- `rag_chat` — Query the ingested document knowledge base."
+      },
+      "response": []
+    }
+  ]
+}

@@ -3,7 +3,8 @@ from app.ingestion.loader import (
 )
 
 from app.ingestion.chunker import (
-    chunk_text
+    chunk_text_character,
+    chunk_text_recursive
 )
 
 from app.ingestion.embedder import (
@@ -23,7 +24,7 @@ text = load_pdf(
 
 
 # Split document into chunks
-chunks = chunk_text(text)
+chunks = chunk_text_character(text)
 
 
 # Generate embeddings for each chunk

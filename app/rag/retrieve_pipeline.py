@@ -15,7 +15,10 @@ from app.generation.prompt_builder import (
 tracer = trace.get_tracer(__name__)
 
 
-def run_rag(query: str):
+def run_rag(
+    query: str,
+    chunk_strategy: str = "character"
+):
 
     # Retrieve relevant chunks from vector database
     with tracer.start_as_current_span(
@@ -27,7 +30,14 @@ def run_rag(query: str):
             query
         )
 
-        results = search(query)
+        collection_name = f"rag_documents_{chunk_strategy}"
+        
+        span.set_attribute(
+            "collection_name", 
+            collection_name
+        )
+        
+        results = search(query, collection_name)
 
     # Construct prompt using retrieved context
     with tracer.start_as_current_span(

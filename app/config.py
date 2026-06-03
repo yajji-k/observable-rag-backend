@@ -23,7 +23,6 @@ QDRANT_PORT = int(
 
 # Vector database collection name
 COLLECTION_NAME = os.getenv(
-    "COLLECTION_NAME",
     "rag_documents"
 )
 

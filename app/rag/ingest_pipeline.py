@@ -1,6 +1,8 @@
 from app.ingestion.loader import load_pdf
 
-from app.ingestion.chunker import chunk_text
+from app.ingestion.chunker import chunk_text_character, chunk_text_recursive
+
+from app.ingestion.cleaner import clean_text
 
 from app.ingestion.embedder import (
     generate_embedding
@@ -13,14 +15,21 @@ from app.retrieval.qdrant_client import (
 
 
 def run_ingestion_pipeline(
-    file_path: str
+    file_path: str,
+    chunk_strategy: str = "character"
 ):
 
     # Extract raw text from uploaded document
-    text = load_pdf(file_path)
+    unfiltered_text = load_pdf(file_path)
+
+    # Clean the raw text to remove noise
+    text = clean_text(unfiltered_text)
 
     # Split large text into smaller chunks
-    chunks = chunk_text(text)
+    if chunk_strategy == "character":    
+        chunks = chunk_text_character(text)
+    elif chunk_strategy == "recursive":
+        chunks = chunk_text_recursive(text)
 
     # Generate embeddings for each chunk
     embeddings = [
@@ -29,10 +38,12 @@ def run_ingestion_pipeline(
     ]
 
     # Recreate Qdrant collection for fresh ingestion
-    create_collection()
+    collection_name = f"rag_documents_{chunk_strategy}"  # chunking strat for collection_name dynamicall
+    create_collection(collection_name)
 
     # Store chunks and embeddings in vector database
     insert_documents(
+        collection_name,
         chunks,
         embeddings
     )

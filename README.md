@@ -8,27 +8,34 @@
 
 An end-to-end Retrieval-Augmented Generation (RAG) backend system built using FastAPI, Qdrant, Sentence Transformers, Gemini, and OpenTelemetry-based observability with Phoenix.
 
-This project focuses on building a production-style AI backend architecture with:
+The project focuses on understanding production-style AI backend architecture through:
 
-* document ingestion pipelines
-* semantic retrieval
-* vector search
+* ingestion engineering
+* retrieval engineering
+* observability-driven debugging
+* vector search systems
 * prompt orchestration
-* telemetry and tracing for debugging RAG workflows
+* semantic retrieval pipelines
 
 ---
 
 # Features
 
 * PDF document ingestion pipeline
-* Semantic chunking and embedding generation
+* Configurable chunking strategies
+* Character-based chunking
+* Recursive semantic-aware chunking
+* Text cleaning and normalization pipeline
 * Vector similarity search using Qdrant
 * Retrieval-Augmented Generation (RAG)
 * Gemini-powered response generation
 * OpenTelemetry tracing
 * Phoenix observability integration
+* Retrieval context observability
+* Strategy-specific vector collections
 * Modular backend architecture
 * Environment-based configuration management
+* Postman collection for API testing
 * Test scripts for ingestion, retrieval, and generation
 
 ---
@@ -44,6 +51,8 @@ FastAPI Endpoint
      ↓
 RAG Retrieval Pipeline
      ↓
+Query Embedding Generation
+     ↓
 Qdrant Vector Search
      ↓
 Relevant Context Retrieval
@@ -55,6 +64,8 @@ Gemini LLM Generation
 Final Response
 ```
 
+---
+
 ## Document Ingestion Flow
 
 ```text
@@ -62,12 +73,71 @@ PDF Upload
     ↓
 Text Extraction
     ↓
-Chunking
+Text Cleaning
+    ↓
+Chunking Strategy Selection
     ↓
 Embedding Generation
     ↓
 Qdrant Vector Storage
 ```
+
+---
+
+# Chunking Strategies
+
+The ingestion pipeline supports multiple chunking strategies for retrieval experimentation and evaluation.
+
+## Character Chunking
+
+Fixed-size chunk slicing with overlap.
+
+Useful for:
+
+* baseline retrieval
+* simple ingestion pipelines
+* fast experimentation
+
+---
+
+## Recursive Chunking
+
+Implemented using:
+
+```text
+RecursiveCharacterTextSplitter
+```
+
+Preserves:
+
+* sentence continuity
+* paragraph structure
+* semantic boundaries
+
+This significantly improved:
+
+* retrieval quality
+* prompt cleanliness
+* response coherence
+
+---
+
+# Text Cleaning Pipeline
+
+Before chunking, extracted PDF text passes through a preprocessing layer to reduce retrieval noise.
+
+Current preprocessing includes:
+
+* whitespace normalization
+* newline cleanup
+* standalone page number removal
+* PDF ligature normalization
+
+This improved:
+
+* embedding quality
+* retrieval readability
+* prompt quality
 
 ---
 
@@ -136,6 +206,8 @@ git clone <your_repo_url>
 cd observable-rag-backend
 ```
 
+---
+
 ## 2. Create Virtual Environment
 
 ```bash
@@ -143,11 +215,15 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
+---
+
 ## 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
+
+---
 
 ## 4. Configure Environment Variables
 
@@ -156,16 +232,25 @@ Create a `.env` file:
 ```env
 QDRANT_HOST=localhost
 QDRANT_PORT=6333
-COLLECTION_NAME=rag_documents
 
 GEMINI_API_KEY=your_api_key
 ```
+
+---
 
 ## 5. Start Qdrant
 
 ```bash
 docker run -p 6333:6333 qdrant/qdrant
 ```
+
+Qdrant Dashboard:
+
+```text
+http://localhost:6333/dashboard
+```
+
+---
 
 ## 6. Start Phoenix
 
@@ -178,6 +263,8 @@ Phoenix UI:
 ```text
 http://localhost:6006
 ```
+
+---
 
 ## 7. Run FastAPI Server
 
@@ -195,13 +282,17 @@ http://127.0.0.1:8000/docs
 
 # API Endpoints
 
-## Ingest PDF
+## Ingest Document
 
 ```http
 POST /ingest
 ```
 
 Uploads and processes PDF documents into the vector database.
+
+Supports configurable chunking strategies.
+
+---
 
 ## Chat with RAG
 
@@ -215,72 +306,95 @@ Retrieves relevant chunks and generates contextual responses using Gemini.
 
 # Sample API Requests
 
-## Ingest PDF
-
-### cURL
+## Ingest PDF with Recursive Chunking
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/ingest" \
--F "file=@sample.pdf"
+curl --location 'http://127.0.0.1:8000/ingest' \
+--form 'file=@"/path/to/document.pdf"' \
+--form 'chunk_strategy=recursive'
 ```
 
-## Chat Endpoint
+---
 
-### cURL
+## Chat Endpoint
 
 ```bash
 curl -X POST "http://127.0.0.1:8000/chat" \
 -H "Content-Type: application/json" \
 -d '{
-  "query": "What is technical analysis?"
+  "query": "What is technical analysis?",
+  "chunk_strategy": "recursive"
 }'
 ```
 
 ---
 
+# Supported Chunking Strategies
+
+| Strategy  | Description                       |
+| --------- | --------------------------------- |
+| character | Fixed-size chunk slicing          |
+| recursive | Recursive semantic-aware chunking |
+
+---
+
 # Postman Collection
 
-A sample Postman collection is included for testing the API endpoints:
+A Postman collection is included for testing the APIs:
 
 ```text
 postman/Rag_system_apis.postman_collection.json
 ```
 
-The collection includes:
+The collection contains:
 
-* PDF ingestion requests
+* ingestion requests
 * RAG chat requests
-
-Import the collection into Postman and start testing immediately after running the backend server.
+* multipart form-data examples
 
 ---
 
-# Telemetry & Observability
+## Important Postman Note
+
+If multipart form-data parsing fails in Postman:
+
+* generate the cURL command from Postman
+* run the generated cURL directly in the terminal
+
+The backend ingestion endpoint works correctly with terminal cURL execution.
+
+---
+
+# Observability & Tracing
 
 This project integrates OpenTelemetry and Phoenix to trace:
 
 * vector retrieval
-* prompt construction
-* LLM generation
 * retrieved context
+* prompt construction
+* selected vector collection
+* LLM generation
 * final responses
 
-The observability layer helps debug:
+Telemetry is heavily used to:
 
-* poor retrieval quality
-* noisy chunking
-* hallucinations
-* prompt construction issues
+* inspect chunk quality
+* debug noisy retrieval
+* compare chunking strategies
+* identify PDF extraction artifacts
+* improve ingestion quality iteratively
 
 ---
 
 # Current Limitations
 
-* Basic character-based chunking
 * PDF-only ingestion
 * No reranking layer
 * No hybrid search
-* Limited metadata filtering
+* No metadata-aware retrieval
+* No retrieval score thresholding
+* No source citations
+* Basic retrieval evaluation only
 
 ---
 
@@ -288,6 +402,8 @@ The observability layer helps debug:
 
 * Semantic chunking
 * Metadata-aware retrieval
+* Retrieval score observability
+* Similarity threshold filtering
 * Hybrid search (BM25 + vector search)
 * Reranking pipelines
 * Source citations
@@ -296,6 +412,8 @@ The observability layer helps debug:
 * Kubernetes deployment
 * Evaluation pipelines
 * Multi-modal ingestion
+* Hierarchical retrieval
+* Agent memory integration
 
 ---
 
@@ -305,8 +423,41 @@ This project was built to deeply understand:
 
 * RAG system architecture
 * vector databases
+* ingestion engineering
+* retrieval engineering
 * embedding pipelines
-* observability in AI systems
+* chunking tradeoffs
+* AI observability
 * OpenTelemetry tracing
+* prompt grounding strategies
 * production-style backend engineering patterns
 * retrieval quality debugging
+
+A major focus of the project is understanding how ingestion quality directly impacts:
+
+* embeddings
+* retrieval quality
+* prompt quality
+* final generation quality
+
+rather than simply assembling AI frameworks together.
+
+---
+
+# Engineering Workflow
+
+The project follows an observability-first retrieval engineering workflow:
+
+```text
+Build Baseline Pipeline
+        ↓
+Observe Retrieval Failures
+        ↓
+Inspect Telemetry Traces
+        ↓
+Improve Ingestion/Retrieval
+        ↓
+Re-evaluate Response Quality
+```
+
+This iterative workflow mirrors how real-world RAG systems are optimized in production environments.

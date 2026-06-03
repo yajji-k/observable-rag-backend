@@ -16,9 +16,12 @@ class ChatRequest(BaseModel):
 @chat_router.post("/chat")
 def chat(request: ChatRequest):
 
+    chunk_strategy: str = "recursive"
+    
     # Run complete RAG pipeline
     response = run_rag(
-        request.query
+        request.query,
+        chunk_strategy
     )
 
     return {

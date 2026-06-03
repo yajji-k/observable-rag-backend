@@ -29,3 +29,6 @@ uploads/
 
 # Test artifacts
 .pytest_cache/
+
+# Qdrant local storage
+qdrant_storage/

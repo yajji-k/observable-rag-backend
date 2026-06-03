@@ -9,7 +9,6 @@ from qdrant_client.models import (
 from app.config import (
     QDRANT_HOST,
     QDRANT_PORT,
-    COLLECTION_NAME
 )
 
 
@@ -20,7 +19,7 @@ client = QdrantClient(
 )
 
 
-def create_collection():
+def create_collection(COLLECTION_NAME):
 
     # Recreate collection for fresh ingestion
     client.recreate_collection(
@@ -40,6 +39,7 @@ def create_collection():
 
 
 def insert_documents(
+    COLLECTION_NAME,
     chunks,
     embeddings
 ):

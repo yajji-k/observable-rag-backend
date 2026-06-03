@@ -1,4 +1,6 @@
-from fastapi import ( APIRouter, UploadFile, File )
+from fastapi import ( APIRouter, Form, UploadFile, File )
+from typing import Annotated
+
 import os
 from app.rag.ingest_pipeline import ( run_ingestion_pipeline )
 
@@ -9,7 +11,8 @@ ingest_router = APIRouter()
 
 @ingest_router.post("/ingest")
 async def ingest_pdf(
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    chunk_strategy: Annotated[str, Form()] = "character"
 ):
 
     # Create uploads directory if it does not exist
@@ -29,7 +32,8 @@ async def ingest_pdf(
 
     # Run complete ingestion pipeline
     response = run_ingestion_pipeline(
-        file_path
+        file_path,
+        chunk_strategy
     )
 
     return response

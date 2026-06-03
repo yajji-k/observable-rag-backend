@@ -6,10 +6,11 @@ from app.retrieval.qdrant_client import (
     client
 )
 
-from app.config import COLLECTION_NAME
 
-
-def search(query: str):
+def search(
+    query: str,
+    collection_name: str
+):
 
     # Generate embedding for user query
     query_embedding = generate_embedding(
@@ -19,7 +20,7 @@ def search(query: str):
     # Perform semantic similarity search
     results = client.query_points(
 
-        collection_name=COLLECTION_NAME,
+        collection_name=collection_name,
 
         query=query_embedding,
 

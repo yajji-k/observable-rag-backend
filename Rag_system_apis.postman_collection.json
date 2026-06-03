@@ -18,7 +18,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"query\": \"Summarize the uploaded document\"\n}",
+          "raw": "{\n  \"query\": \"Summarize the uploaded document\",\n  \"chunk_strategy\": \"recursive\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -39,7 +39,7 @@
             "chat"
           ]
         },
-        "description": "## RAG Chat\n\nSends a natural language query to the RAG (Retrieval-Augmented Generation) powered chat endpoint. The system retrieves relevant context from the ingested knowledge base and uses it to generate an accurate, context-aware response.\n\n---\n\n### Request Body\n\n| Field   | Type   | Required | Description |\n|---------|--------|----------|-------------|\n| `query` | string | ✅ Yes   | The user's natural language query sent to the RAG system. |\n\n### Example\n\n`json\n{\n  \"query\": \"Summarize the uploaded document\"\n}\n`\n\n---\n\n### How It Works\n\n1. The query is received by the backend.\n2. The system generates embeddings for the query.\n3. A semantic similarity search is performed over the ingested document store.\n4. Relevant chunks are retrieved from Qdrant.\n5. Retrieved context is passed into the prompt pipeline.\n6. Gemini generates a grounded response using the retrieved context.\n\n---\n\n### Example Queries\n\n- Summarize the uploaded document.\n- Explain the key concepts in this PDF.\n- What are the main takeaways from the document?\n- Explain this topic in simple terms.\n- Give a concise summary of the retrieved context.\n\n---\n\n### Expected Response\n\nThe endpoint returns a context-aware response grounded in the documents previously ingested via the `/ingest` endpoint."
+        "description": "## RAG Chat\n\nSends a natural language query to the RAG (Retrieval-Augmented Generation) chat endpoint.\n\nThe system:\n\n1. Generates embeddings for the query.\n2. Performs semantic retrieval from Qdrant.\n3. Retrieves relevant chunks from the selected chunking strategy collection.\n4. Constructs a grounded prompt.\n5. Generates a contextual response using Gemini.\n\n---\n\n### Request Body\n\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `query` | string | ✅ Yes | User query sent to the RAG system. |\n| `chunk_strategy` | string | ❌ No | Chunking strategy collection used for retrieval. Defaults to `character`. |\n\n---\n\n### Supported Chunking Strategies\n\n| Strategy | Description |\n|---|---|\n| `character` | Fixed-size character chunking |\n| `recursive` | Recursive semantic-aware chunking |\n\n---\n\n### Example Request\n\n`json\n{\n  \"query\": \"Summarize the uploaded document\",\n  \"chunk_strategy\": \"recursive\"\n}\n`\n\n---\n\n### Collection Routing\n\nThe selected chunking strategy dynamically routes retrieval to different Qdrant collections.\n\nExamples:\n\n| Strategy | Collection |\n|---|---|\n| `character` | `rag_documents_character` |\n| `recursive` | `rag_documents_recursive` |\n\nThis allows retrieval quality comparison across chunking strategies.\n\n---\n\n### Example Queries\n\n- Summarize the uploaded document.\n- Explain the key concepts in this PDF.\n- What are the main takeaways from the document?\n- Explain this topic in simple terms.\n- Give a concise summary of the retrieved context.\n\n---\n\n### Expected Response\n\nThe endpoint returns a context-aware response grounded in the retrieved chunks from the selected vector collection."
       },
       "response": []
     },
@@ -55,6 +55,11 @@
               "key": "file",
               "type": "file",
               "src": []
+            },
+            {
+              "key": "chunk_strategy",
+              "value": "recursive",
+              "type": "text"
             }
           ]
         },
@@ -72,7 +77,7 @@
             "ingest"
           ]
         },
-        "description": "## RAG Ingest\n\nUploads and ingests a document into the Retrieval-Augmented Generation (RAG) pipeline.\n\nThe uploaded document is:\n\n1. Parsed and converted into raw text.\n2. Split into smaller chunks.\n3. Converted into vector embeddings.\n4. Stored inside Qdrant for semantic retrieval.\n\n---\n\n### Request Body\n\nThis request uses `multipart/form-data` encoding.\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| `file` | File | Yes | Document file to ingest into the vector database. |\n\n---\n\n### Supported File Types\n\nCurrently supported:\n\n- PDF\n\n---\n\n### Example Workflow\n\n1. Upload a document using `/ingest`\n2. The document gets chunked and embedded\n3. Embeddings are stored in Qdrant\n4. Query the knowledge base using `/chat`\n\n---\n\n### Example Request\n\n`http\nPOST http://127.0.0.1:8000/ingest\nContent-Type: multipart/form-data\n`\n\nAttach a PDF file in the `file` field.\n\n---\n\n### Expected Response\n\n`json\n{\n  \"message\": \"Document ingested successfully\"\n}\n`\n\n---\n\n### Related Endpoints\n\n- `rag_chat` — Query the ingested document knowledge base."
+        "description": "## RAG Ingest\n\nUploads and ingests a document into the Retrieval-Augmented Generation (RAG) pipeline.\n\nThe uploaded document is:\n\n1. Parsed into raw text.\n2. Cleaned and normalized.\n3. Chunked using the selected chunking strategy.\n4. Converted into embeddings.\n5. Stored inside a strategy-specific Qdrant collection.\n\n---\n\n### Request Body\n\nThis endpoint uses `multipart/form-data`.\n\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `file` | File | ✅ Yes | PDF document to ingest. |\n| `chunk_strategy` | Text | ❌ No | Chunking strategy to use during ingestion. Defaults to `character`. |\n\n---\n\n### Supported Chunking Strategies\n\n| Strategy | Description |\n|---|---|\n| `character` | Fixed-size character chunking |\n| `recursive` | Recursive semantic-aware chunking |\n\n---\n\n### Collection Routing\n\nDifferent chunking strategies create separate vector collections.\n\nExamples:\n\n| Strategy | Collection |\n|---|---|\n| `character` | `rag_documents_character` |\n| `recursive` | `rag_documents_recursive` |\n\nThis enables:\n- retrieval quality comparison\n- chunking experimentation\n- observability-driven evaluation\n\n---\n\n### Example Workflow\n\n1. Upload PDF document.\n2. Clean extracted text.\n3. Chunk text using selected strategy.\n4. Generate embeddings.\n5. Store embeddings in Qdrant.\n6. Query the collection using `/chat`.\n\n---\n\n### Example cURL\n\n`bash\ncurl --location 'http://127.0.0.1:8000/ingest' \\\n--form 'file=@\"/path/to/document.pdf\"' \\\n--form 'chunk_strategy=recursive'\n`\n\n---\n\n### Important Postman Note\n\nIf multipart form-data parsing behaves unexpectedly in Postman:\n\n1. Generate the cURL command from Postman.\n2. Execute the generated cURL directly in the terminal.\n\nThe backend ingestion endpoint works correctly with terminal cURL execution.\n\n---\n\n### Expected Response\n\n`json\n{\n  \"message\": \"Document ingested successfully\"\n}\n`\n\n---\n\n### Related Endpoints\n\n- `rag_chat` — Query the ingested document collections."
       },
       "response": []
     }

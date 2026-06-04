@@ -19,12 +19,8 @@ def search(
 
     # Perform semantic similarity search
     results = client.query_points(
-
         collection_name=collection_name,
-
         query=query_embedding,
-
-        # Number of relevant chunks to retrieve
         limit=3
     )
 

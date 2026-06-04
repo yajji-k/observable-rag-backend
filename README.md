@@ -49,13 +49,15 @@ User Query
      ↓
 FastAPI Endpoint
      ↓
-RAG Retrieval Pipeline
-     ↓
 Query Embedding Generation
      ↓
 Qdrant Vector Search
      ↓
-Relevant Context Retrieval
+Metadata-Aware Retrieval
+     ↓
+Retrieval Score Analytics
+     ↓
+Context Construction
      ↓
 Prompt Construction
      ↓
@@ -138,6 +140,68 @@ This improved:
 * embedding quality
 * retrieval readability
 * prompt quality
+
+---
+
+# Metadata-Aware Retrieval
+
+Each chunk stored in Qdrant contains retrieval metadata:
+
+```json
+{
+  "text": "...",
+  "source_file": "TA_wrkbk.pdf",
+  "chunk_id": 348,
+  "chunk_strategy": "recursive",
+  "domain": "general"
+}
+```
+
+Metadata enables:
+
+* source tracking
+* chunk traceability
+* retrieval debugging
+* chunking strategy comparisons
+* observability-driven retrieval analysis
+
+During retrieval, chunk metadata is surfaced in Phoenix traces to help inspect retrieval quality and understand why specific chunks were selected.
+
+---
+
+# Retrieval Score Analytics
+
+The retrieval pipeline captures score analytics for every query and exposes them through Phoenix traces.
+
+Tracked metrics:
+
+* retrieval.max_score
+* retrieval.min_score
+* retrieval.avg_score
+* retrieval.score_range
+
+Example telemetry:
+
+```json
+{
+  "retrieval": {
+    "max_score": 0.8740,
+    "avg_score": 0.8320,
+    "min_score": 0.8071,
+    "score_range": 0.0669
+  }
+}
+```
+
+These metrics help evaluate:
+
+* retrieval quality
+* chunking strategies
+* embedding model effectiveness
+* retrieval consistency
+* future similarity threshold selection
+
+The goal is to measure retrieval quality before introducing threshold-based filtering or more advanced retrieval techniques.
 
 ---
 
@@ -368,8 +432,14 @@ The backend ingestion endpoint works correctly with terminal cURL execution.
 # Observability & Tracing
 
 This project integrates OpenTelemetry and Phoenix to trace:
+This project integrates OpenTelemetry and Phoenix to trace:
 
+* user queries
 * vector retrieval
+* retrieval scores
+* retrieval score analytics
+* source files
+* chunk IDs
 * retrieved context
 * prompt construction
 * selected vector collection
@@ -391,7 +461,6 @@ Telemetry is heavily used to:
 * PDF-only ingestion
 * No reranking layer
 * No hybrid search
-* No metadata-aware retrieval
 * No retrieval score thresholding
 * No source citations
 * Basic retrieval evaluation only
@@ -401,8 +470,6 @@ Telemetry is heavily used to:
 # Future Improvements
 
 * Semantic chunking
-* Metadata-aware retrieval
-* Retrieval score observability
 * Similarity threshold filtering
 * Hybrid search (BM25 + vector search)
 * Reranking pipelines

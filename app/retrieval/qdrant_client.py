@@ -40,40 +40,51 @@ def create_collection(COLLECTION_NAME):
 
 def insert_documents(
     COLLECTION_NAME,
-    chunks,
+    chunk_records,
     embeddings
 ):
 
     points = []
 
-    # Combine chunks with their embeddings
-    for idx, (chunk, embedding) in enumerate(
-        zip(chunks, embeddings)
+    # Combine chunk data with its embedding
+    # and convert it into a Qdrant PointStruct
+    for idx, (record, embedding) in enumerate(
+        zip(chunk_records, embeddings)
     ):
 
         point = PointStruct(
 
+            # Unique point id within collection
             id=idx,
 
+            # Vector embedding generated from chunk text
             vector=embedding,
 
+            # Metadata stored alongside vector
             payload={
 
-                # Original chunk text
-                "text": chunk,
+                # Original chunk content
+                "text": record["text"],
 
-                # Metadata for future filtering
+                # Source PDF filename
+                "source_file": record["source_file"],
+
+                # Position of chunk within document
+                "chunk_id": record["chunk_id"],
+
+                # Chunking strategy used during ingestion
+                "chunk_strategy": record["chunk_strategy"],
+
+                # Placeholder metadata for future filtering
                 "domain": "general"
             }
         )
 
         points.append(point)
 
-    # Insert all points into Qdrant
+    # Insert all vectors and metadata into Qdrant
     client.upsert(
-
         collection_name=COLLECTION_NAME,
-
         points=points
     )
 

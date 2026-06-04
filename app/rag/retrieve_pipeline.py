@@ -38,6 +38,23 @@ def run_rag(
         )
         
         results = search(query, collection_name)
+        
+        retrieval_info = []
+        
+        for rank, result in enumerate(results):
+            retrieval_info.append(
+                {
+                    "rank":  rank,
+                    "score": round(result.score,4),
+                    "source_file": result.payload["source_file"],
+                    "chunk_id": result.payload["chunk_id"],
+                }
+            )
+        
+        span.set_attribute(
+            "retrieval.results",
+            str(retrieval_info)
+        )
 
     # Construct prompt using retrieved context
     with tracer.start_as_current_span(
@@ -46,8 +63,7 @@ def run_rag(
 
         context = "\n\n".join(
             [
-                result.payload["text"]
-                for result in results
+                result.payload["text"] for result in results
             ]
         )
 

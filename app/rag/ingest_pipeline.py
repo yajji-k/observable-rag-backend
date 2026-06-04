@@ -31,10 +31,24 @@ def run_ingestion_pipeline(
     elif chunk_strategy == "recursive":
         chunks = chunk_text_recursive(text)
 
+
+    # set chunks with records(metadata) in a list
+    chunk_records = []
+    
+    for idx, chunk in enumerate(chunks):
+        chunk_records.append(
+            {
+                "text": chunk,
+                "chunk_id": idx,
+                "chunk_strategy": chunk_strategy,
+                "source_file": file_path.split("/")[-1]
+            }
+        )
+
     # Generate embeddings for each chunk
     embeddings = [
-        generate_embedding(chunk)
-        for chunk in chunks
+        generate_embedding(records['text'])
+        for records in chunk_records
     ]
 
     # Recreate Qdrant collection for fresh ingestion
@@ -44,7 +58,7 @@ def run_ingestion_pipeline(
     # Store chunks and embeddings in vector database
     insert_documents(
         collection_name,
-        chunks,
+        chunk_records,
         embeddings
     )
 

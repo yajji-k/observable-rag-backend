@@ -1,16 +1,10 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
-
+from app.models.chat_models import ChatRequest
 from app.rag.retrieve_pipeline import run_rag
 
 
 # Router for chat-related APIs
 chat_router = APIRouter()
-
-
-# Request body schema for chat endpoint
-class ChatRequest(BaseModel):
-    query: str
 
 
 @chat_router.post("/chat")

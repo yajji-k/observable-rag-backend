@@ -1,6 +1,6 @@
 from app.ingestion.loader import load_pdf
 
-from app.ingestion.chunker import chunk_text_character, chunk_text_recursive
+from app.ingestion.chunking.chunker_factory import ChunkerFactory
 
 from app.ingestion.cleaner import clean_text
 
@@ -25,16 +25,26 @@ def run_ingestion_pipeline(
     # Clean the raw text to remove noise
     text = clean_text(unfiltered_text)
 
-    # Split large text into smaller chunks
-    if chunk_strategy == "character":    
-        chunks = chunk_text_character(text)
-    elif chunk_strategy == "recursive":
-        chunks = chunk_text_recursive(text)
-
-
-    # set chunks with records(metadata) in a list
-    chunk_records = []
+    try:
+        # Create chunking strategy
+        chunker = ChunkerFactory.create(
+            strategy=chunk_strategy,
+            chunk_size=500,
+            overlap=100
+        )
     
+    except ValueError as e:
+        return {
+            "status" : "error",
+            "message" : str(e)
+        }
+
+    # Generate chunks
+    chunks = chunker.chunk(text)
+
+    # Store chunk metadata
+    chunk_records = []
+
     for idx, chunk in enumerate(chunks):
         chunk_records.append(
             {
@@ -45,17 +55,18 @@ def run_ingestion_pipeline(
             }
         )
 
-    # Generate embeddings for each chunk
+    # Generate embeddings
     embeddings = [
-        generate_embedding(records['text'])
-        for records in chunk_records
+        generate_embedding(record["text"])
+        for record in chunk_records
     ]
 
-    # Recreate Qdrant collection for fresh ingestion
-    collection_name = f"rag_documents_{chunk_strategy}"  # chunking strat for collection_name dynamicall
+    # Create collection
+    collection_name = f"rag_documents_{chunk_strategy}"
+
     create_collection(collection_name)
 
-    # Store chunks and embeddings in vector database
+    # Insert into Qdrant
     insert_documents(
         collection_name,
         chunk_records,

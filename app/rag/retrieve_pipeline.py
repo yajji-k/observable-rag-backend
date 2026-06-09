@@ -20,9 +20,7 @@ def run_rag(
         "vector_retrieval"
     ) as span:
 
-        collection_name = (
-            f"rag_documents_{chunk_strategy}"
-        )
+        collection_name = f"rag_documents_{chunk_strategy}"
 
         span.set_attribute(
             "user.query",

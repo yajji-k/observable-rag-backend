@@ -10,12 +10,7 @@
       "name": "rag_chat",
       "request": {
         "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
+        "header": [],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"query\": \"Summarize the uploaded document\",\n  \"chunk_strategy\": \"recursive\"\n}",
@@ -45,6 +40,11 @@
     },
     {
       "name": "rag_ingest",
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {
+          "content-type": true
+        }
+      },
       "request": {
         "method": "POST",
         "header": [],
@@ -78,6 +78,49 @@
           ]
         },
         "description": "## RAG Ingest\n\nUploads and ingests a document into the Retrieval-Augmented Generation (RAG) pipeline.\n\nThe uploaded document is:\n\n1. Parsed into raw text.\n2. Cleaned and normalized.\n3. Chunked using the selected chunking strategy.\n4. Converted into embeddings.\n5. Stored inside a strategy-specific Qdrant collection.\n\n---\n\n### Request Body\n\nThis endpoint uses `multipart/form-data`.\n\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `file` | File | ✅ Yes | PDF document to ingest. |\n| `chunk_strategy` | Text | ❌ No | Chunking strategy to use during ingestion. Defaults to `character`. |\n\n---\n\n### Supported Chunking Strategies\n\n| Strategy | Description |\n|---|---|\n| `character` | Fixed-size character chunking |\n| `recursive` | Recursive semantic-aware chunking |\n\n---\n\n### Collection Routing\n\nDifferent chunking strategies create separate vector collections.\n\nExamples:\n\n| Strategy | Collection |\n|---|---|\n| `character` | `rag_documents_character` |\n| `recursive` | `rag_documents_recursive` |\n\nThis enables:\n- retrieval quality comparison\n- chunking experimentation\n- observability-driven evaluation\n\n---\n\n### Example Workflow\n\n1. Upload PDF document.\n2. Clean extracted text.\n3. Chunk text using selected strategy.\n4. Generate embeddings.\n5. Store embeddings in Qdrant.\n6. Query the collection using `/chat`.\n\n---\n\n### Example cURL\n\n`bash\ncurl --location 'http://127.0.0.1:8000/ingest' \\\n--form 'file=@\"/path/to/document.pdf\"' \\\n--form 'chunk_strategy=recursive'\n`\n\n---\n\n### Important Postman Note\n\nIf multipart form-data parsing behaves unexpectedly in Postman:\n\n1. Generate the cURL command from Postman.\n2. Execute the generated cURL directly in the terminal.\n\nThe backend ingestion endpoint works correctly with terminal cURL execution.\n\n---\n\n### Expected Response\n\n`json\n{\n  \"message\": \"Document ingested successfully\"\n}\n`\n\n---\n\n### Related Endpoints\n\n- `rag_chat` — Query the ingested document collections."
+      },
+      "response": []
+    },
+    {
+      "name": "chunking_strategies",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "73db4887-76cb-435d-ab56-0f169f4036c4",
+              "src": "/Users/yajneshsingh/Desktop/Developer/Projects/AI Engineer/rag-system/data/TA_wrkbk.pdf"
+            },
+            {
+              "key": "chunk_strategy",
+              "type": "text",
+              "uuid": "53ba0ff8-3a83-4540-8d79-4d0231ed5fe0",
+              "value": "recursive"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/chunking/strategies",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "chunking",
+            "strategies"
+          ]
+        }
       },
       "response": []
     }

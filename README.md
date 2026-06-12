@@ -22,9 +22,13 @@ The project focuses on understanding production-style AI backend architecture th
 # Features
 
 * PDF document ingestion pipeline
-* Configurable chunking strategies
-* Character-based chunking
-* Recursive semantic-aware chunking
+* Strategy-based chunking architecture
+* Character chunking
+* Recursive chunking
+* Token chunking
+* Semantic chunking
+* Dynamic chunking strategy selection
+* Chunking strategy discovery endpoint
 * Text cleaning and normalization pipeline
 * Vector similarity search using Qdrant
 * Retrieval-Augmented Generation (RAG)
@@ -88,7 +92,9 @@ Qdrant Vector Storage
 
 # Chunking Strategies
 
-The ingestion pipeline supports multiple chunking strategies for retrieval experimentation and evaluation.
+The ingestion pipeline uses a pluggable Strategy Pattern architecture, allowing new chunking methods to be added with minimal changes to the ingestion pipeline.
+
+Supported strategies:
 
 ## Character Chunking
 
@@ -116,11 +122,61 @@ Preserves:
 * paragraph structure
 * semantic boundaries
 
-This significantly improved:
+Useful for:
 
-* retrieval quality
-* prompt cleanliness
-* response coherence
+* structured documents
+* general-purpose retrieval
+* context preservation
+
+---
+
+## Token Chunking
+
+Splits documents based on token counts rather than character counts.
+
+Benefits:
+
+* chunk sizes align with LLM tokenization
+* more predictable embedding sizes
+* improved context window management
+
+Useful for:
+
+* embedding experiments
+* token-aware retrieval pipelines
+* LLM context optimization
+
+---
+
+## Semantic Chunking
+
+Groups neighboring sentences based on embedding similarity.
+
+Workflow:
+
+```text
+Document
+    ↓
+Sentence Splitting
+    ↓
+Sentence Embeddings
+    ↓
+Cosine Similarity
+    ↓
+Semantic Grouping
+```
+
+Benefits:
+
+* topic-aware chunk boundaries
+* improved semantic coherence
+* retrieval-focused chunk construction
+
+Useful for:
+
+* retrieval experimentation
+* semantic search optimization
+* chunk quality evaluation
 
 ---
 

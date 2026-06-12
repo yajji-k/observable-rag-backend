@@ -2,6 +2,7 @@ from app.ingestion.chunking.token_chunker import TokenChunker
 
 from .character_chunker import CharacterChunker
 from .recursive_chunker import RecursiveChunker
+from .semantic_chunker import SemanticChunker
 
 
 class ChunkerFactory:
@@ -9,7 +10,8 @@ class ChunkerFactory:
     _chunkers = {
         "character": CharacterChunker,
         "recursive": RecursiveChunker,
-        "token": TokenChunker
+        "token": TokenChunker,
+        "semantic": SemanticChunker
     }
 
     @classmethod
@@ -33,4 +35,7 @@ class ChunkerFactory:
                 f"Available strategies: {available}"
             )
 
-        return chunker_class
+        return chunker_class(
+            chunk_size=chunk_size,
+            overlap=overlap
+        )

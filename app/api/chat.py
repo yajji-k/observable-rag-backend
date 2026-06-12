@@ -9,13 +9,11 @@ chat_router = APIRouter()
 
 @chat_router.post("/chat")
 def chat(request: ChatRequest):
-
-    chunk_strategy: str = "recursive"
     
     # Run complete RAG pipeline
     response = run_rag(
         request.query,
-        chunk_strategy
+        request.chunk_strat
     )
 
     return {

@@ -6,22 +6,53 @@ from app.retrieval.qdrant_client import (
     client
 )
 
+from app.retrieval.strategy_registry import (
+    StrategyRegistry
+)
 
-def search(
-    query: str,
+
+def collection_exists(
     collection_name: str
-):
+) -> bool:
 
-    # Generate embedding for user query
-    query_embedding = generate_embedding(
-        query
+    return client.collection_exists(
+        collection_name=collection_name
     )
 
-    # Perform semantic similarity search
+
+def retrieve(
+    query: str,
+    strategy: str,
+    top_k: int = 3
+) -> list:
+
+    # Fetch collection name for required strategy
+    collection_name = (
+        StrategyRegistry.get_collection_name(
+            strategy=strategy
+        )
+    )
+
+    # Validate collection exists
+    if not collection_exists(
+        collection_name
+    ):
+        raise ValueError(
+            f"Collection '{collection_name}' does not exist"
+        )
+
+    # Generate embedding for user query
+    query_embedding = (
+        generate_embedding(
+            query
+        )
+    )
+
+    # Perform similarity search
     results = client.query_points(
         collection_name=collection_name,
         query=query_embedding,
-        limit=3
+        limit=top_k
     )
 
     return results.points

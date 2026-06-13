@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.evaluation.retrieval_evaluator import (
+from app.evaluation.retriever.retrieval_evaluator import (
     run_retrieval_evaluation
 )
 

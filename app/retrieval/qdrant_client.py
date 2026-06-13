@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-
+import uuid
 from qdrant_client.models import (
     VectorParams,
     Distance,
@@ -19,23 +19,26 @@ client = QdrantClient(
 )
 
 
-def create_collection(COLLECTION_NAME):
+def create_collection(collection_name: str):
 
-    # Recreate collection for fresh ingestion
-    client.recreate_collection(
+    collections = client.get_collections().collections
 
-        collection_name=COLLECTION_NAME,
+    if any(
+        collection.name == collection_name
+        for collection in collections
+    ):
+        print(f"Collection '{collection_name}' already exists.")
+        return
 
+    client.create_collection(
+        collection_name=collection_name,
         vectors_config=VectorParams(
-
-            # Must match embedding model output dimension
             size=384,
-
             distance=Distance.COSINE
         )
     )
 
-    print("Collection created!")
+    print(f"Collection '{collection_name}' created!")
 
 
 def insert_documents(
@@ -55,7 +58,7 @@ def insert_documents(
         point = PointStruct(
 
             # Unique point id within collection
-            id=idx,
+            id=str(uuid.uuid4()),
 
             # Vector embedding generated from chunk text
             vector=embedding,
@@ -89,3 +92,43 @@ def insert_documents(
     )
 
     print("Chunks inserted!")
+    
+    
+def delete_collection(collection_name: str):
+
+    collections = client.get_collections().collections
+
+    if not any(
+        collection.name == collection_name
+        for collection in collections
+    ):
+        print(
+            f"Collection '{collection_name}' does not exist."
+        )
+        return
+
+    client.delete_collection(
+        collection_name=collection_name
+    )
+
+    print(
+        f"Collection '{collection_name}' deleted."
+    )
+    
+def delete_all_rag_collections():
+
+    collections = client.get_collections().collections
+
+    for collection in collections:
+
+        if collection.name.startswith(
+            "rag_documents_"
+        ):
+
+            client.delete_collection(
+                collection_name=collection.name
+            )
+
+            print(
+                f"Deleted: {collection.name}"
+            )

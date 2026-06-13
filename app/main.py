@@ -12,6 +12,8 @@ from app.api.chunking import chunking_router
 
 from app.evaluation.api.evaluation_api import eval_router
 
+from app.evaluation.api.benchmark_api import benchmark_router
+
 # Initialize FastAPI application
 app = FastAPI()
 
@@ -21,3 +23,4 @@ app.include_router(chat_router)
 app.include_router(ingest_router)
 app.include_router(chunking_router)
 app.include_router(eval_router)
+app.include_router(benchmark_router)

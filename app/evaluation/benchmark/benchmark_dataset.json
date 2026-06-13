@@ -1,0 +1,152 @@
+[
+  {
+    "id": "q1",
+    "query": "What is technical analysis and how does it differ from fundamental analysis?",
+    "expected_topics": ["technical analysis", "fundamental analysis"]
+  },
+  {
+    "id": "q2",
+    "query": "Why is risk management considered more important than maximizing profits?",
+    "expected_topics": ["risk management", "capital preservation"]
+  },
+  {
+    "id": "q3",
+    "query": "What information does a stock chart provide and why is it useful?",
+    "expected_topics": ["charts", "price history"]
+  },
+  {
+    "id": "q4",
+    "query": "Compare line charts and bar charts.",
+    "expected_topics": ["line charts", "bar charts"]
+  },
+  {
+    "id": "q5",
+    "query": "What is candlestick analysis and what psychological information does it reveal?",
+    "expected_topics": ["candlestick analysis", "investor psychology"]
+  },
+  {
+    "id": "q6",
+    "query": "What are support and resistance levels and why do they occur?",
+    "expected_topics": ["support", "resistance"]
+  },
+  {
+    "id": "q7",
+    "query": "How can a support level become a resistance level?",
+    "expected_topics": ["support", "resistance", "reversal"]
+  },
+  {
+    "id": "q8",
+    "query": "Explain the head and shoulders pattern and its significance.",
+    "expected_topics": ["head and shoulders"]
+  },
+  {
+    "id": "q9",
+    "query": "What is the difference between a double top and a double bottom pattern?",
+    "expected_topics": ["double top", "double bottom"]
+  },
+  {
+    "id": "q10",
+    "query": "What are the different types of gaps in technical analysis?",
+    "expected_topics": ["common gap", "breakaway gap", "runaway gap", "exhaustion gap"]
+  },
+  {
+    "id": "q11",
+    "query": "What does a technical indicator offer to traders?",
+    "expected_topics": ["technical indicators"]
+  },
+  {
+    "id": "q12",
+    "query": "What are the three primary functions of technical indicators?",
+    "expected_topics": ["alert", "confirm", "predict"]
+  },
+  {
+    "id": "q13",
+    "query": "Why should traders avoid using too many indicators simultaneously?",
+    "expected_topics": ["indicator selection", "indicator redundancy"]
+  },
+  {
+    "id": "q14",
+    "query": "What is the difference between a simple moving average and an exponential moving average?",
+    "expected_topics": ["SMA", "EMA"]
+  },
+  {
+    "id": "q15",
+    "query": "When should moving averages be used and what signals can they generate?",
+    "expected_topics": ["moving averages", "crossovers"]
+  },
+  {
+    "id": "q16",
+    "query": "What is RSI and how is it used in trading?",
+    "expected_topics": ["RSI"]
+  },
+  {
+    "id": "q17",
+    "query": "How does RSI identify overbought and oversold conditions?",
+    "expected_topics": ["RSI", "overbought", "oversold"]
+  },
+  {
+    "id": "q18",
+    "query": "What is divergence and why is it important in technical analysis?",
+    "expected_topics": ["divergence"]
+  },
+  {
+    "id": "q19",
+    "query": "What is MACD and how is it calculated?",
+    "expected_topics": ["MACD"]
+  },
+  {
+    "id": "q20",
+    "query": "What advantages does MACD provide compared to other indicators?",
+    "expected_topics": ["MACD", "benefits"]
+  },
+  {
+    "id": "q21",
+    "query": "What are Bollinger Bands and how are they used by traders?",
+    "expected_topics": ["Bollinger Bands"]
+  },
+  {
+    "id": "q22",
+    "query": "How can multiple indicators be combined to generate trading signals?",
+    "expected_topics": ["multiple indicators", "trading signals"]
+  },
+  {
+    "id": "q23",
+    "query": "What are the advantages and risks associated with day trading?",
+    "expected_topics": ["day trading"]
+  },
+  {
+    "id": "q24",
+    "query": "What is momentum trading and when is it most effective?",
+    "expected_topics": ["momentum trading"]
+  },
+  {
+    "id": "q25",
+    "query": "What are the main principles of Dow Theory?",
+    "expected_topics": ["Dow Theory"]
+  },
+  {
+    "id": "q26",
+    "query": "What are the limitations or problems associated with Dow Theory?",
+    "expected_topics": ["Dow Theory limitations"]
+  },
+  {
+    "id": "q27",
+    "query": "What is the fundamental concept behind Elliott Wave Theory?",
+    "expected_topics": ["Elliott Wave Theory"]
+  },
+  {
+    "id": "q28",
+    "query": "How are Fibonacci retracements used to identify support and resistance levels?",
+    "expected_topics": ["Fibonacci retracement"]
+  },
+  {
+    "id": "q29",
+    "query": "Explain the Fibonacci relationships between Elliott Waves.",
+    "expected_topics": ["Fibonacci relationship", "Elliott waves"]
+  },
+  {
+    "id": "q30",
+    "query": "What qualities and disciplines are commonly found in successful traders?",
+    "expected_topics": ["successful traders", "trading psychology", "risk management"]
+  }
+]

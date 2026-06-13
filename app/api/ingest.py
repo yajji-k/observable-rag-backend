@@ -1,8 +1,20 @@
-from fastapi import ( APIRouter, Form, UploadFile, File )
+from fastapi import (
+    APIRouter,
+    Form,
+    UploadFile,
+    File
+)
 from typing import Annotated
 
 import os
-from app.rag.ingest_pipeline import ( run_ingestion_pipeline )
+
+from app.rag.ingest_pipeline import (
+    run_ingestion_pipeline
+)
+
+from app.retrieval.qdrant_client import (
+    delete_all_rag_collections
+)
 
 
 # Router for ingestion-related APIs
@@ -37,3 +49,14 @@ async def ingest_pdf(
     )
 
     return response
+
+
+@ingest_router.delete("/collections/delete")
+def clear_all_collections():
+
+    delete_all_rag_collections()
+
+    return {
+        "status": "success",
+        "message": "All RAG collections deleted successfully."
+    }

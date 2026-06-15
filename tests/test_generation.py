@@ -1,13 +1,13 @@
-from app.generation.gemini_client import (
+from app.services.generation.gemini_client import (
     generate_response
 )
 
-from app.generation.prompt_builder import (
+from app.services.generation.prompt_builder import (
     build_rag_prompt
 )
 
-from app.retrieval.retriever import (
-    search
+from app.services.retrieval.retriever import (
+    retrieve
 )
 
 
@@ -16,7 +16,10 @@ query = "Explain technical analysis in simple words."
 
 
 # Retrieve relevant chunks
-results = search(query)
+results = retrieve(
+    query=query,
+    strategy="character"
+)
 
 
 # Build context from retrieved chunks

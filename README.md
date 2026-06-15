@@ -297,23 +297,73 @@ The goal is to measure retrieval quality before introducing threshold-based filt
 ```text
 app/
 ├── api/
-├── generation/
-├── ingestion/
-├── rag/
-├── retrieval/
-├── telemetry.py
-├── config.py
-└── main.py
+│   └── routes/                    # FastAPI endpoint definitions
+│       ├── benchmark.py
+│       ├── chat.py
+│       ├── chunking.py
+│       ├── ingestion.py
+│       └── retrieval_evaluation.py
+├── core/
+│   ├── config.py                  # Environment-based configuration
+│   └── telemetry.py               # Phoenix/OpenTelemetry bootstrap
+├── data/
+│   └── benchmark_dataset.json
+├── infrastructure/
+│   └── vector_store/
+│       └── qdrant.py              # Qdrant client and persistence adapter
+├── observability/
+│   └── retrieval_analytics.py
+├── schemas/                       # Pydantic data contracts
+│   ├── benchmark.py
+│   ├── chat.py
+│   ├── chunk.py
+│   └── evaluation.py
+├── services/
+│   ├── evaluation/
+│   │   ├── benchmark/
+│   │   │   ├── aggregator.py
+│   │   │   ├── loader.py
+│   │   │   └── runner.py
+│   │   └── retrieval_evaluator.py
+│   ├── generation/
+│   │   ├── gemini_client.py
+│   │   └── prompt_builder.py
+│   ├── ingestion/
+│   │   ├── chunking/
+│   │   ├── cleaner.py
+│   │   ├── embedder.py
+│   │   ├── loader.py
+│   │   └── pipeline.py
+│   ├── rag/
+│   │   └── pipeline.py
+│   └── retrieval/
+│       ├── retriever.py
+│       └── strategy_registry.py
+└── main.py                        # ASGI application entry point
 
 tests/
 ├── test_generation.py
 ├── test_ingestion.py
 ├── test_loader.py
 └── test_retrieval.py
-
-postman/
-└── Rag_system_apis.postman_collection.json
 ```
+
+The package boundaries follow a simple dependency direction:
+
+```text
+API routes
+    ↓
+Services
+    ↓
+Infrastructure adapters
+
+Schemas and core configuration are shared contracts.
+Observability can be used across each layer.
+```
+
+The API layer only handles HTTP concerns. Pipelines and evaluation behavior
+live in services, while Qdrant-specific operations are isolated in
+infrastructure.
 
 ---
 

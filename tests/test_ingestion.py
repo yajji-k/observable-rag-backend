@@ -1,17 +1,16 @@
-from app.ingestion.loader import (
+from app.services.ingestion.loader import (
     load_pdf
 )
 
-from app.ingestion.chunker import (
-    chunk_text_character,
-    chunk_text_recursive
+from app.services.ingestion.chunking.chunker_factory import (
+    ChunkerFactory
 )
 
-from app.ingestion.embedder import (
+from app.services.ingestion.embedder import (
     generate_embedding
 )
 
-from app.retrieval.qdrant_client import (
+from app.infrastructure.vector_store.qdrant import (
     create_collection,
     insert_documents
 )
@@ -24,7 +23,8 @@ text = load_pdf(
 
 
 # Split document into chunks
-chunks = chunk_text_character(text)
+chunker = ChunkerFactory.create("character")
+chunks = chunker.chunk(text)
 
 
 # Generate embeddings for each chunk
@@ -35,11 +35,21 @@ embeddings = [
 
 
 # Recreate vector collection
-create_collection()
+collection_name = "rag_documents_character"
+create_collection(collection_name)
 
 
 # Store embeddings in Qdrant
 insert_documents(
-    chunks,
+    collection_name,
+    [
+        {
+            "text": chunk,
+            "source_file": "TA_wrkbk.pdf",
+            "chunk_id": index,
+            "chunk_strategy": "character",
+        }
+        for index, chunk in enumerate(chunks)
+    ],
     embeddings
 )

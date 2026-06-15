@@ -1,11 +1,12 @@
-from app.retrieval.retriever import (
-    search
+from app.services.retrieval.retriever import (
+    retrieve
 )
 
 
 # Perform semantic similarity search
-results = search(
-    "What is technical analysis?"
+results = retrieve(
+    query="What is technical analysis?",
+    strategy="character"
 )
 
 

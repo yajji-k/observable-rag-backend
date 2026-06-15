@@ -1,4 +1,4 @@
-from app.ingestion.loader import (
+from app.services.ingestion.loader import (
     load_pdf
 )
 

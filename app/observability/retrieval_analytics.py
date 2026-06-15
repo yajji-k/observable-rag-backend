@@ -1,39 +1,43 @@
-def log_retrieval_score_analytics(
-    span,
-    scores
-):
-    """
-    Calculate retrieval score metrics and
-    attach them to the OpenTelemetry span.
-    """
+from typing import Any
 
-    
+from opentelemetry.trace import Span
 
+
+def calculate_retrieval_score_analytics(
+    scores: list[float]
+) -> dict[str, Any]:
     if not scores:
-        return
+        return {
+            "retrieval.max_score": None,
+            "retrieval.min_score": None,
+            "retrieval.average_score": None,
+            "retrieval.score_range": None,
+        }
 
-    span.set_attribute(
-        "retrieval.max_score",
-        round(max(scores), 4)
-    )
-
-    span.set_attribute(
-        "retrieval.min_score",
-        round(min(scores), 4)
-    )
-
-    span.set_attribute(
-        "retrieval.avg_score",
-        round(
+    return {
+        "retrieval.max_score": round(max(scores), 4),
+        "retrieval.min_score": round(min(scores), 4),
+        "retrieval.average_score": round(
             sum(scores) / len(scores),
             4
-        )
+        ),
+        "retrieval.score_range": round(
+            max(scores) - min(scores),
+            4
+        ),
+    }
+
+
+def log_retrieval_score_analytics(
+    span: Span,
+    scores: list[float]
+) -> dict[str, Any]:
+    analytics = calculate_retrieval_score_analytics(
+        scores
     )
-    
-    span.set_attribute(
-    "retrieval.score_range",
-    round(
-        max(scores) - min(scores),
-        4
-    )
-)
+
+    for name, value in analytics.items():
+        if value is not None:
+            span.set_attribute(name, value)
+
+    return analytics

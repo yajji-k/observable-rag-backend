@@ -1,5 +1,14 @@
 from collections import defaultdict
 
+from openinference.semconv.trace import OpenInferenceSpanKindValues
+
+from app.observability.tracing import (
+    set_attributes,
+    set_input,
+    set_output,
+    span_kind,
+    tracer,
+)
 from app.schemas.benchmark import (
     BenchmarkResult,
     BenchmarkSummary,
@@ -11,9 +20,45 @@ class BenchmarkAggregator:
 
     def aggregate(
         self,
+        results: list[BenchmarkResult],
+        run_id: str | None = None
+    ) -> BenchmarkSummary:
+        with tracer.start_as_current_span(
+            "benchmark.aggregate",
+            attributes=span_kind(
+                OpenInferenceSpanKindValues.EVALUATOR
+            )
+        ) as span:
+            set_input(
+                span,
+                {
+                    "result_count": len(results)
+                }
+            )
+            set_attributes(
+                span,
+                {
+                    "benchmark.run_id": run_id,
+                    "benchmark.result_count": len(results),
+                }
+            )
+
+            summary = self._aggregate(results)
+            set_attributes(
+                span,
+                {
+                    "benchmark.total_queries":
+                        summary.total_queries,
+                }
+            )
+            set_output(span, summary.model_dump())
+
+            return summary
+
+    def _aggregate(
+        self,
         results: list[BenchmarkResult]
     ) -> BenchmarkSummary:
-
         if not results:
             return BenchmarkSummary(
                 total_queries=0,

@@ -233,7 +233,7 @@ Tracked metrics:
 
 * retrieval.max_score
 * retrieval.min_score
-* retrieval.avg_score
+* retrieval.average_score
 * retrieval.score_range
 
 Example telemetry:
@@ -312,7 +312,8 @@ app/
 │   └── vector_store/
 │       └── qdrant.py              # Qdrant client and persistence adapter
 ├── observability/
-│   └── retrieval_analytics.py
+│   ├── retrieval_analytics.py
+│   └── tracing.py                 # Shared OpenInference span utilities
 ├── schemas/                       # Pydantic data contracts
 │   ├── benchmark.py
 │   ├── chat.py
@@ -404,6 +405,11 @@ QDRANT_HOST=localhost
 QDRANT_PORT=6333
 
 GEMINI_API_KEY=your_api_key
+
+PHOENIX_ENABLED=true
+PHOENIX_PROJECT_NAME=observable-rag-backend
+PHOENIX_COLLECTOR_ENDPOINT=http://localhost:4317
+PHOENIX_PROTOCOL=grpc
 ```
 
 ---
@@ -537,10 +543,13 @@ The backend ingestion endpoint works correctly with terminal cURL execution.
 
 # Observability & Tracing
 
-This project integrates OpenTelemetry and Phoenix to trace:
-This project integrates OpenTelemetry and Phoenix to trace:
+This project integrates OpenTelemetry, OpenInference, and Phoenix to trace:
 
 * user queries
+* document ingestion
+* chunk creation
+* embedding generation
+* Qdrant operations
 * vector retrieval
 * retrieval scores
 * retrieval score analytics
@@ -551,6 +560,64 @@ This project integrates OpenTelemetry and Phoenix to trace:
 * selected vector collection
 * LLM generation
 * final responses
+* retrieval evaluations
+* benchmark runs, queries, winners, and aggregates
+
+## Trace Hierarchy
+
+```text
+rag.query
+├── retrieval.<strategy>
+│   ├── embedding.generate
+│   └── qdrant.query_points
+├── rag.build_prompt
+└── Google GenAI LLM span
+
+ingestion.run
+├── ingestion.load_document
+├── ingestion.clean_document
+├── ingestion.chunk_document
+├── ingestion.embed_chunks
+│   └── embedding.generate
+├── qdrant.create_collection
+└── qdrant.upsert_documents
+
+benchmark.run
+├── benchmark.query
+│   └── retrieval.evaluate
+│       └── retrieval.<strategy>
+└── benchmark.aggregate
+```
+
+OpenInference span kinds are used so Phoenix recognizes chains, retrievers,
+embeddings, prompts, evaluators, tools, and automatically instrumented Gemini
+LLM calls.
+
+## Phoenix Configuration
+
+```env
+PHOENIX_ENABLED=true
+PHOENIX_PROJECT_NAME=observable-rag-backend
+PHOENIX_COLLECTOR_ENDPOINT=http://localhost:4317
+PHOENIX_PROTOCOL=grpc
+PHOENIX_BATCH_EXPORT=true
+PHOENIX_CAPTURE_CONTENT=true
+```
+
+For Phoenix Cloud, also set:
+
+```env
+PHOENIX_API_KEY=your_api_key
+PHOENIX_COLLECTOR_ENDPOINT=your_phoenix_collector_endpoint
+PHOENIX_PROTOCOL=http/protobuf
+```
+
+Set `PHOENIX_CAPTURE_CONTENT=false` to keep query text, prompts, responses,
+and retrieved document content out of traces while retaining operational
+metrics and metadata.
+
+Set `PHOENIX_ENABLED=false` to disable exporting without changing application
+code.
 
 Telemetry is heavily used to:
 

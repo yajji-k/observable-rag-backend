@@ -1,4 +1,8 @@
-from openinference.semconv.trace import OpenInferenceSpanKindValues
+from pathlib import Path
+
+from openinference.semconv.trace import (
+    OpenInferenceSpanKindValues
+)
 
 from app.observability.tracing import (
     set_attributes,
@@ -7,16 +11,19 @@ from app.observability.tracing import (
     span_kind,
     tracer,
 )
+
 from app.schemas.benchmark import (
     BenchmarkQuery,
     BenchmarkResult,
 )
+
 from app.services.evaluation.retrieval_evaluator import (
     run_retrieval_evaluation,
 )
 
 
 class BenchmarkRunner:
+
     def __init__(self, top_k: int = 5):
         self.top_k = top_k
 
@@ -29,27 +36,39 @@ class BenchmarkRunner:
         benchmark_results: list[BenchmarkResult] = []
 
         for benchmark_query in benchmark_queries:
+
             with tracer.start_as_current_span(
                 "benchmark.query",
                 attributes=span_kind(
                     OpenInferenceSpanKindValues.EVALUATOR
                 )
             ) as span:
+
                 set_input(
                     span,
                     {
-                        "query": benchmark_query.query,
+                        "query":
+                            benchmark_query.query,
+
                         "expected_topics":
                             benchmark_query.expected_topics,
+
+                        "expected_document":
+                            benchmark_query.expected_document,
                     }
                 )
+
                 set_attributes(
                     span,
                     {
-                        "benchmark.run_id": run_id,
+                        "benchmark.run_id":
+                            run_id,
+
                         "benchmark.query_id":
                             benchmark_query.id,
-                        "benchmark.top_k": self.top_k,
+
+                        "benchmark.top_k":
+                            self.top_k,
                     }
                 )
 
@@ -63,32 +82,115 @@ class BenchmarkRunner:
                     )
                 )
 
-                query_results = []
+                query_results: list[
+                    BenchmarkResult
+                ] = []
 
                 for strategy_result in (
                     evaluation_response.results
                 ):
-                    if strategy_result.status != "success":
+
+                    if (
+                        strategy_result.status
+                        != "success"
+                    ):
                         continue
 
+                    # ----------------------------------
+                    # Find expected document rank
+                    # ----------------------------------
+
+                    rank = None
+
+                    for index, chunk in enumerate(
+                        strategy_result.retrieved_chunks,
+                        start=1
+                    ):
+
+                        source_file = Path(
+                            chunk.source_file
+                        ).name
+
+                        if (
+                            source_file
+                            ==
+                            benchmark_query.expected_document
+                        ):
+                            rank = index
+                            break
+
+                    hit_at_1 = (
+                        rank is not None
+                        and rank <= 1
+                    )
+
+                    hit_at_3 = (
+                        rank is not None
+                        and rank <= 3
+                    )
+
+                    hit_at_5 = (
+                        rank is not None
+                        and rank <= 5
+                    )
+
                     result = BenchmarkResult(
-                        query_id=benchmark_query.id,
-                        query=benchmark_query.query,
-                        strategy=strategy_result.strategy,
-                        max_score=strategy_result.max_score,
-                        min_score=strategy_result.min_score,
+                        query_id=
+                            benchmark_query.id,
+
+                        query=
+                            benchmark_query.query,
+
+                        strategy=
+                            strategy_result.strategy,
+
+                        max_score=
+                            strategy_result.max_score,
+
+                        min_score=
+                            strategy_result.min_score,
+
                         average_score=
                             strategy_result.average_score,
+
                         retrieval_time_ms=
                             strategy_result.retrieval_time_ms,
+
+                        rank=rank,
+
+                        hit_at_1=hit_at_1,
+
+                        hit_at_3=hit_at_3,
+
+                        hit_at_5=hit_at_5,
                     )
+
                     query_results.append(result)
                     benchmark_results.append(result)
 
-                winner = max(
-                    query_results,
-                    key=lambda result: result.average_score
-                ) if query_results else None
+                # ----------------------------------
+                # Current winner logic
+                # (keep score-based for now)
+                # ----------------------------------
+
+                winner = (
+                    max(
+                        query_results,
+                        key=lambda result:
+                            result.average_score
+                    )
+                    if query_results
+                    else None
+                )
+
+                best_rank = min(
+                    (
+                        r.rank
+                        for r in query_results
+                        if r.rank is not None
+                    ),
+                    default=None,
+                )
 
                 set_attributes(
                     span,
@@ -96,23 +198,36 @@ class BenchmarkRunner:
                         "benchmark.winning_strategy":
                             winner.strategy
                             if winner else None,
+
                         "benchmark.winning_score":
                             winner.average_score
                             if winner else None,
+
                         "benchmark.successful_strategy_count":
                             len(query_results),
+
+                        "benchmark.expected_document_found":
+                            any(
+                                r.hit_at_5
+                                for r in query_results
+                            ),
+
+                        "benchmark.best_rank":
+                            best_rank,
                     }
                 )
+
                 set_output(
                     span,
                     {
                         "winning_strategy":
                             winner.strategy
                             if winner else None,
+
                         "strategy_results": [
                             result.model_dump()
                             for result in query_results
-                        ],
+                        ]
                     }
                 )
 

@@ -1,152 +1,303 @@
 [
   {
-    "id": "q1",
-    "query": "What is technical analysis and how does it differ from fundamental analysis?",
-    "expected_topics": ["technical analysis", "fundamental analysis"]
+    "id": "java_1",
+    "query": "What is Oracle JVM and what capabilities does it provide within Oracle Database?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["Oracle JVM"]
   },
   {
-    "id": "q2",
-    "query": "Why is risk management considered more important than maximizing profits?",
-    "expected_topics": ["risk management", "capital preservation"]
+    "id": "java_2",
+    "query": "What are the main components of Oracle JVM?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["Library Manager", "Compiler", "Class Loader"]
   },
   {
-    "id": "q3",
-    "query": "What information does a stock chart provide and why is it useful?",
-    "expected_topics": ["charts", "price history"]
+    "id": "java_3",
+    "query": "How does Oracle Database support Java stored procedures?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["Java Stored Procedures"]
   },
   {
-    "id": "q4",
-    "query": "Compare line charts and bar charts.",
-    "expected_topics": ["line charts", "bar charts"]
+    "id": "java_4",
+    "query": "What is the role of the loadjava tool?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["loadjava"]
   },
   {
-    "id": "q5",
-    "query": "What is candlestick analysis and what psychological information does it reveal?",
-    "expected_topics": ["candlestick analysis", "investor psychology"]
+    "id": "java_5",
+    "query": "How are Java classes stored and managed inside Oracle Database?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["Class Storage"]
   },
   {
-    "id": "q6",
-    "query": "What are support and resistance levels and why do they occur?",
-    "expected_topics": ["support", "resistance"]
+    "id": "java_6",
+    "query": "How does Oracle JVM handle security permissions?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["Java Security", "Permissions"]
   },
   {
-    "id": "q7",
-    "query": "How can a support level become a resistance level?",
-    "expected_topics": ["support", "resistance", "reversal"]
+    "id": "java_7",
+    "query": "What is JMX support in Oracle JVM used for?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["JMX", "Monitoring"]
   },
   {
-    "id": "q8",
-    "query": "Explain the head and shoulders pattern and its significance.",
-    "expected_topics": ["head and shoulders"]
+    "id": "java_8",
+    "query": "How can Java methods be invoked from PL/SQL?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["PLSQL Wrappers", "Call Specifications"]
   },
   {
-    "id": "q9",
-    "query": "What is the difference between a double top and a double bottom pattern?",
-    "expected_topics": ["double top", "double bottom"]
+    "id": "java_9",
+    "query": "What are the advantages of Java stored procedures?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["Performance", "Scalability", "Security"]
   },
   {
-    "id": "q10",
-    "query": "What are the different types of gaps in technical analysis?",
-    "expected_topics": ["common gap", "breakaway gap", "runaway gap", "exhaustion gap"]
+    "id": "java_10",
+    "query": "How does Oracle JVM improve application performance using JIT compilation?",
+    "expected_document": "java-developers-guide.pdf",
+    "expected_topics": ["JIT Compiler"]
   },
   {
-    "id": "q11",
-    "query": "What does a technical indicator offer to traders?",
-    "expected_topics": ["technical indicators"]
+    "id": "sb_1",
+    "query": "What is Spring Boot and what problems does it solve?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["Introduction"]
   },
   {
-    "id": "q12",
-    "query": "What are the three primary functions of technical indicators?",
-    "expected_topics": ["alert", "confirm", "predict"]
+    "id": "sb_2",
+    "query": "What is auto-configuration in Spring Boot?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["Auto Configuration"]
   },
   {
-    "id": "q13",
-    "query": "Why should traders avoid using too many indicators simultaneously?",
-    "expected_topics": ["indicator selection", "indicator redundancy"]
+    "id": "sb_3",
+    "query": "What is the purpose of the @SpringBootApplication annotation?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["SpringBootApplication"]
   },
   {
-    "id": "q14",
-    "query": "What is the difference between a simple moving average and an exponential moving average?",
-    "expected_topics": ["SMA", "EMA"]
+    "id": "sb_4",
+    "query": "How does externalized configuration work in Spring Boot?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["Configuration"]
   },
   {
-    "id": "q15",
-    "query": "When should moving averages be used and what signals can they generate?",
-    "expected_topics": ["moving averages", "crossovers"]
+    "id": "sb_5",
+    "query": "What are Spring Boot Starters?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["Starters"]
   },
   {
-    "id": "q16",
-    "query": "What is RSI and how is it used in trading?",
-    "expected_topics": ["RSI"]
+    "id": "sb_6",
+    "query": "How can profiles be used in Spring Boot applications?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["Profiles"]
   },
   {
-    "id": "q17",
-    "query": "How does RSI identify overbought and oversold conditions?",
-    "expected_topics": ["RSI", "overbought", "oversold"]
+    "id": "sb_7",
+    "query": "How does Spring Boot support embedded servlet containers?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["Embedded Tomcat"]
   },
   {
-    "id": "q18",
-    "query": "What is divergence and why is it important in technical analysis?",
-    "expected_topics": ["divergence"]
+    "id": "sb_8",
+    "query": "What options are available for logging in Spring Boot?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["Logging"]
   },
   {
-    "id": "q19",
-    "query": "What is MACD and how is it calculated?",
-    "expected_topics": ["MACD"]
+    "id": "sb_9",
+    "query": "How does Spring Boot configure SQL databases automatically?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["DataSource", "JPA"]
   },
   {
-    "id": "q20",
-    "query": "What advantages does MACD provide compared to other indicators?",
-    "expected_topics": ["MACD", "benefits"]
+    "id": "sb_10",
+    "query": "How does Spring Boot integrate with OAuth2 security?",
+    "expected_document": "spring-boot-reference.pdf",
+    "expected_topics": ["OAuth2"]
   },
   {
-    "id": "q21",
-    "query": "What are Bollinger Bands and how are they used by traders?",
-    "expected_topics": ["Bollinger Bands"]
+    "id": "kafka_1",
+    "query": "What is KafkaTemplate and how is it used to send messages?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["KafkaTemplate"]
   },
   {
-    "id": "q22",
-    "query": "How can multiple indicators be combined to generate trading signals?",
-    "expected_topics": ["multiple indicators", "trading signals"]
+    "id": "kafka_2",
+    "query": "How does Spring Kafka connect to Apache Kafka brokers?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["Kafka Connection"]
   },
   {
-    "id": "q23",
-    "query": "What are the advantages and risks associated with day trading?",
-    "expected_topics": ["day trading"]
+    "id": "kafka_3",
+    "query": "What is the purpose of the @KafkaListener annotation?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["KafkaListener"]
   },
   {
-    "id": "q24",
-    "query": "What is momentum trading and when is it most effective?",
-    "expected_topics": ["momentum trading"]
+    "id": "kafka_4",
+    "query": "What are listener containers in Spring Kafka?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["Listener Containers"]
   },
   {
-    "id": "q25",
-    "query": "What are the main principles of Dow Theory?",
-    "expected_topics": ["Dow Theory"]
+    "id": "kafka_5",
+    "query": "How are transactions implemented in Spring Kafka?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["Transactions"]
   },
   {
-    "id": "q26",
-    "query": "What are the limitations or problems associated with Dow Theory?",
-    "expected_topics": ["Dow Theory limitations"]
+    "id": "kafka_6",
+    "query": "What are exactly-once semantics in Kafka?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["EOS"]
   },
   {
-    "id": "q27",
-    "query": "What is the fundamental concept behind Elliott Wave Theory?",
-    "expected_topics": ["Elliott Wave Theory"]
+    "id": "kafka_7",
+    "query": "How does Spring Kafka handle retries and dead-letter topics?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["Retry", "DLQ"]
   },
   {
-    "id": "q28",
-    "query": "How are Fibonacci retracements used to identify support and resistance levels?",
-    "expected_topics": ["Fibonacci retracement"]
+    "id": "kafka_8",
+    "query": "How are serialization and deserialization configured in Spring Kafka?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["Serialization"]
   },
   {
-    "id": "q29",
-    "query": "Explain the Fibonacci relationships between Elliott Waves.",
-    "expected_topics": ["Fibonacci relationship", "Elliott waves"]
+    "id": "kafka_9",
+    "query": "What monitoring capabilities are available in Spring Kafka?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["Micrometer", "Monitoring"]
   },
   {
-    "id": "q30",
-    "query": "What qualities and disciplines are commonly found in successful traders?",
-    "expected_topics": ["successful traders", "trading psychology", "risk management"]
+    "id": "kafka_10",
+    "query": "How does Spring Kafka support Kafka Streams applications?",
+    "expected_document": "spring-kafka-reference.pdf",
+    "expected_topics": ["Kafka Streams"]
+  },
+  {
+    "id": "ng_1",
+    "query": "What is Angular and how is an Angular application structured?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Angular Architecture"]
+  },
+  {
+    "id": "ng_2",
+    "query": "What are Angular components and how are they used?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Components"]
+  },
+  {
+    "id": "ng_3",
+    "query": "What is dependency injection in Angular?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Dependency Injection"]
+  },
+  {
+    "id": "ng_4",
+    "query": "How does Angular routing work?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Routing"]
+  },
+  {
+    "id": "ng_5",
+    "query": "What are Angular services and when should they be used?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Services"]
+  },
+  {
+    "id": "ng_6",
+    "query": "What is data binding in Angular?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Data Binding"]
+  },
+  {
+    "id": "ng_7",
+    "query": "How do reactive forms work in Angular?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Reactive Forms"]
+  },
+  {
+    "id": "ng_8",
+    "query": "How does Angular change detection work?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Change Detection"]
+  },
+  {
+    "id": "ng_9",
+    "query": "What are Angular directives and pipes?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["Directives", "Pipes"]
+  },
+  {
+    "id": "ng_10",
+    "query": "How does Angular HttpClient communicate with backend APIs?",
+    "expected_document": "angular-developer-guide.pdf",
+    "expected_topics": ["HttpClient"]
+  },
+  {
+    "id": "eds_1",
+    "query": "What is an event-driven architecture?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["EDA"]
+  },
+  {
+    "id": "eds_2",
+    "query": "What are the core components of an event-driven system?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["Events", "Producers", "Consumers"]
+  },
+  {
+    "id": "eds_3",
+    "query": "What is event sourcing and when should it be used?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["Event Sourcing"]
+  },
+  {
+    "id": "eds_4",
+    "query": "What are CQRS and its benefits?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["CQRS"]
+  },
+  {
+    "id": "eds_5",
+    "query": "How do producers and consumers communicate in an event-driven architecture?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["Messaging"]
+  },
+  {
+    "id": "eds_6",
+    "query": "What is eventual consistency in distributed systems?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["Eventual Consistency"]
+  },
+  {
+    "id": "eds_7",
+    "query": "What are common challenges in event-driven systems?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["Challenges"]
+  },
+  {
+    "id": "eds_8",
+    "query": "How does Apache Kafka support event-driven architectures?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["Kafka"]
+  },
+  {
+    "id": "eds_9",
+    "query": "What design patterns are commonly used in event-driven systems?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["Patterns"]
+  },
+  {
+    "id": "eds_10",
+    "query": "How can event-driven systems be monitored and debugged?",
+    "expected_document": "Designing-Event-Driven-Systems.pdf",
+    "expected_topics": ["Observability"]
   }
 ]
+

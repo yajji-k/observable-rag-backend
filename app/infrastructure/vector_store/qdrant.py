@@ -101,9 +101,9 @@ def insert_documents(
                 payload={
                     "text": record["text"],
                     "source_file": record["source_file"],
+                    "document_name": record["source_file"],
                     "chunk_id": record["chunk_id"],
-                    "chunk_strategy": record["chunk_strategy"],
-                    "domain": "general"
+                    "chunk_strategy": record["chunk_strategy"]
                 }
             )
 
@@ -192,26 +192,41 @@ def delete_collection(collection_name: str):
         )
 
 
-def delete_all_rag_collections():
+def delete_all_rag_collections() -> list[str]:
     with tracer.start_as_current_span(
         "qdrant.delete_rag_collections",
         attributes=span_kind(
             OpenInferenceSpanKindValues.TOOL
         )
     ) as span:
+
         collections = client.get_collections().collections
         deleted = []
 
         for collection in collections:
+
             if collection.name.startswith(
                 "rag_documents_"
             ):
+
                 client.delete_collection(
                     collection_name=collection.name
                 )
-                deleted.append(collection.name)
+
+                deleted.append(
+                    collection.name
+                )
+
                 print(
                     f"Deleted: {collection.name}"
                 )
 
-        set_output(span, {"deleted_collections": deleted})
+        set_output(
+            span,
+            {
+                "deleted_collections": deleted
+            }
+        )
+
+        return deleted
+    

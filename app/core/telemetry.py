@@ -18,9 +18,6 @@ tracer_provider = None
 
 def initialize_telemetry():
     
-    print("PHOENIX_COLLECTOR_ENDPOINT =", PHOENIX_COLLECTOR_ENDPOINT)
-    print("PHOENIX_PROTOCOL =", PHOENIX_PROTOCOL)
-    
     global tracer_provider
 
     if not PHOENIX_ENABLED or tracer_provider is not None:

@@ -8,6 +8,7 @@ from typing import Annotated
 
 import os
 
+from app.core.config import INGESTION_FOLDER
 from app.services.ingestion.pipeline import (
     run_ingestion_pipeline
 )
@@ -15,6 +16,8 @@ from app.services.ingestion.pipeline import (
 from app.infrastructure.vector_store.qdrant import (
     delete_all_rag_collections
 )
+
+from pathlib import Path
 
 
 # Router for ingestion-related APIs
@@ -50,13 +53,75 @@ async def ingest_pdf(
 
     return response
 
+@ingest_router.post("/ingest/folder")
+def ingest_folder(
+    clear_existing: bool = False,
+    chunk_strategy: str = "character"
+):
 
+    if clear_existing:
+        delete_all_rag_collections()
+
+    ingestion_dir = Path(INGESTION_FOLDER)
+
+    if not ingestion_dir.exists():
+        return {
+            "status": "error",
+            "message": "Ingestion folder not found"
+        }
+
+    pdf_files = list(
+        ingestion_dir.glob("*.pdf")
+    )
+
+    if not pdf_files:
+        return {
+            "status": "error",
+            "message": "No PDF files found in ingestion folder"
+        }
+
+    results = []
+    failures = []
+
+    for pdf_file in pdf_files:
+
+        try:
+
+            response = run_ingestion_pipeline(
+                str(pdf_file),
+                chunk_strategy
+            )
+
+            results.append({
+                "file": pdf_file.name,
+                "status": "success",
+                "result": response
+            })
+
+        except Exception as e:
+
+            failures.append({
+                "file": pdf_file.name,
+                "status": "failed",
+                "error": str(e)
+            })
+
+    return {
+        "status": "completed",
+        "chunk_strategy": chunk_strategy,
+        "processed_files": len(results),
+        "failed_files": len(failures),
+        "results": results,
+        "failures": failures
+    }
+    
+    
 @ingest_router.delete("/collections/delete")
 def clear_all_collections():
 
-    delete_all_rag_collections()
+    deleted = delete_all_rag_collections()
 
     return {
         "status": "success",
-        "message": "All RAG collections deleted successfully."
+        "deleted_collections": deleted
     }

@@ -76,3 +76,8 @@ PHOENIX_CAPTURE_CONTENT = get_bool_env(
     "PHOENIX_CAPTURE_CONTENT",
     True
 )
+
+INGESTION_FOLDER = os.getenv(
+    "INGESTION_FOLDER", 
+    "data/ingestion"
+)

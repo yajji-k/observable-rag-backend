@@ -24,8 +24,17 @@ from app.services.evaluation.retrieval_evaluator import (
 
 class BenchmarkRunner:
 
-    def __init__(self, top_k: int = 5):
+    def __init__(
+        self,
+        top_k: int = 5,
+        reranking_enabled: bool | None = None,
+        reranker_model: str | None = None,
+        candidate_count: int | None = None
+    ):
         self.top_k = top_k
+        self.reranking_enabled = reranking_enabled
+        self.reranker_model = reranker_model
+        self.candidate_count = candidate_count
 
     def run(
         self,
@@ -69,6 +78,12 @@ class BenchmarkRunner:
 
                         "benchmark.top_k":
                             self.top_k,
+                        "benchmark.reranking_enabled":
+                            self.reranking_enabled,
+                        "benchmark.reranker_model":
+                            self.reranker_model,
+                        "benchmark.candidate_count":
+                            self.candidate_count,
                     }
                 )
 
@@ -79,6 +94,12 @@ class BenchmarkRunner:
                         benchmark_run_id=run_id,
                         benchmark_query_id=
                             benchmark_query.id,
+                        reranking_enabled=
+                            self.reranking_enabled,
+                        reranker_model=
+                            self.reranker_model,
+                        candidate_count=
+                            self.candidate_count,
                     )
                 )
 
@@ -134,6 +155,12 @@ class BenchmarkRunner:
                         and rank <= 5
                     )
 
+                    strategy_name = (
+                        f"{strategy_result.strategy}+rerank"
+                        if self.reranking_enabled
+                        else strategy_result.strategy
+                    )
+
                     result = BenchmarkResult(
                         query_id=
                             benchmark_query.id,
@@ -141,8 +168,7 @@ class BenchmarkRunner:
                         query=
                             benchmark_query.query,
 
-                        strategy=
-                            strategy_result.strategy,
+                        strategy=strategy_name,
 
                         max_score=
                             strategy_result.max_score,
@@ -152,6 +178,9 @@ class BenchmarkRunner:
 
                         average_score=
                             strategy_result.average_score,
+
+                        average_rerank_score=
+                            strategy_result.average_rerank_score,
 
                         retrieval_time_ms=
                             strategy_result.retrieval_time_ms,

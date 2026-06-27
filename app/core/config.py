@@ -81,3 +81,34 @@ INGESTION_FOLDER = os.getenv(
     "INGESTION_FOLDER", 
     "data/ingestion"
 )
+
+
+# Reranker configuration
+RERANKER_ENABLED = get_bool_env(
+    "RERANKER_ENABLED",
+    True
+)
+
+RERANKER_MODEL = os.getenv(
+    "RERANKER_MODEL",
+    "bge"
+)
+
+RERANKER_BGE_MODEL_NAME = os.getenv(
+    "RERANKER_BGE_MODEL_NAME",
+    "BAAI/bge-reranker-base"
+)
+
+RERANKER_CANDIDATE_COUNT = int(
+    os.getenv(
+        "RERANKER_CANDIDATE_COUNT",
+        20
+    )
+)
+
+RERANKER_FINAL_TOP_K = int(
+    os.getenv(
+        "RERANKER_FINAL_TOP_K",
+        5
+    )
+)

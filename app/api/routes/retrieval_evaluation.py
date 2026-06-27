@@ -22,5 +22,8 @@ def evaluate_retrieval(
 
     return run_retrieval_evaluation(
         query=request.query,
-        top_k=request.top_k
+        top_k=request.top_k,
+        reranking_enabled=request.reranking_enabled,
+        reranker_model=request.reranker_model,
+        candidate_count=request.candidate_count
     )

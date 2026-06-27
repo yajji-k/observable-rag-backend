@@ -23,7 +23,10 @@ def run_retrieval_evaluation(
     query: str,
     top_k: int,
     benchmark_run_id: str | None = None,
-    benchmark_query_id: str | None = None
+    benchmark_query_id: str | None = None,
+    reranking_enabled: bool | None = None,
+    reranker_model: str | None = None,
+    candidate_count: int | None = None
 ) -> RetrievalEvaluationResponse:
     with tracer.start_as_current_span(
         "retrieval.evaluate",
@@ -37,6 +40,12 @@ def run_retrieval_evaluation(
             {
                 "evaluation.type": "retrieval",
                 "evaluation.top_k": top_k,
+                "evaluation.reranking_enabled":
+                    reranking_enabled,
+                "evaluation.reranker_model":
+                    reranker_model,
+                "evaluation.candidate_count":
+                    candidate_count,
                 "benchmark.run_id": benchmark_run_id,
                 "benchmark.query_id": benchmark_query_id,
             }
@@ -55,7 +64,10 @@ def run_retrieval_evaluation(
                         "benchmark.run_id": benchmark_run_id,
                         "benchmark.query_id":
                             benchmark_query_id,
-                    }
+                    },
+                    reranking_enabled=reranking_enabled,
+                    reranker_model=reranker_model,
+                    candidate_count=candidate_count
                 )
 
                 retrieval_time_ms = round(
@@ -70,6 +82,12 @@ def run_retrieval_evaluation(
                     RetrievedChunk(
                         text=result.payload["text"],
                         score=result.score,
+                        vector_score=result.payload.get(
+                            "vector_score"
+                        ),
+                        rerank_score=result.payload.get(
+                            "rerank_score"
+                        ),
                         source_file=result.payload["source_file"],
                         chunk_id=result.payload["chunk_id"]
                     )
@@ -78,6 +96,11 @@ def run_retrieval_evaluation(
                 scores = [
                     chunk.score
                     for chunk in retrieved_chunks
+                ]
+                rerank_scores = [
+                    chunk.rerank_score
+                    for chunk in retrieved_chunks
+                    if chunk.rerank_score is not None
                 ]
 
                 strategy_result = StrategyEvaluationResult(
@@ -91,6 +114,11 @@ def run_retrieval_evaluation(
                         sum(scores) / len(scores),
                         4
                     ) if scores else None,
+                    average_rerank_score=round(
+                        sum(rerank_scores)
+                        / len(rerank_scores),
+                        4
+                    ) if rerank_scores else None,
                     retrieval_time_ms=retrieval_time_ms,
                     retrieved_chunks=retrieved_chunks
                 )
@@ -102,6 +130,7 @@ def run_retrieval_evaluation(
                     max_score=None,
                     min_score=None,
                     average_score=None,
+                    average_rerank_score=None,
                     retrieval_time_ms=None,
                     retrieved_chunks=[]
                 )
@@ -138,6 +167,8 @@ def run_retrieval_evaluation(
                         "status": result.status,
                         "average_score":
                             result.average_score,
+                        "average_rerank_score":
+                            result.average_rerank_score,
                         "retrieval_time_ms":
                             result.retrieval_time_ms,
                     }

@@ -15,6 +15,7 @@ class BenchmarkResult(BaseModel):
     max_score: float | None = None
     min_score: float | None = None
     average_score: float | None = None
+    average_rerank_score: float | None = None
 
     retrieval_time_ms: float | None = None
     

@@ -41,3 +41,15 @@ def log_retrieval_score_analytics(
             span.set_attribute(name, value)
 
     return analytics
+
+
+def calculate_average_score(
+    scores: list[float]
+) -> float | None:
+    if not scores:
+        return None
+
+    return round(
+        sum(scores) / len(scores),
+        4
+    )

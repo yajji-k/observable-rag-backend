@@ -1,7 +1,7 @@
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from openinference.instrumentation import using_attributes
 from openinference.semconv.trace import OpenInferenceSpanKindValues
 
@@ -25,7 +25,17 @@ DEFAULT_DATASET_PATH = (
 )
 
 @benchmark_router.post("/benchmark/default")
-def run_benchmark():
+def run_benchmark(
+    reranking_enabled: bool | None = Query(
+        default=None
+    ),
+    reranker_model: str | None = Query(
+        default=None
+    ),
+    candidate_count: int | None = Query(
+        default=None
+    )
+):
     run_id = str(uuid4())
 
     with using_attributes(
@@ -54,6 +64,12 @@ def run_benchmark():
                     "benchmark.run_id": run_id,
                     "benchmark.dataset":
                         DEFAULT_DATASET_PATH.name,
+                    "benchmark.reranking_enabled":
+                        reranking_enabled,
+                    "benchmark.reranker_model":
+                        reranker_model,
+                    "benchmark.candidate_count":
+                        candidate_count,
                 }
             )
 
@@ -62,7 +78,11 @@ def run_benchmark():
             )
             queries = loader.load_dataset()
 
-            runner = BenchmarkRunner()
+            runner = BenchmarkRunner(
+                reranking_enabled=reranking_enabled,
+                reranker_model=reranker_model,
+                candidate_count=candidate_count
+            )
             results = runner.run(
                 queries,
                 run_id=run_id

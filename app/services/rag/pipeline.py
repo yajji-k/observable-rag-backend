@@ -42,10 +42,31 @@ def run_rag(
                 strategy=chunk_strategy
             )
 
-            context = "\n\n".join(
-                result.payload["text"]
-                for result in results
-            )
+            with tracer.start_as_current_span(
+                "retrieval.context_builder",
+                attributes=span_kind(
+                    OpenInferenceSpanKindValues.CHAIN
+                )
+            ) as context_span:
+                context = "\n\n".join(
+                    result.payload["text"]
+                    for result in results
+                )
+                set_attributes(
+                    context_span,
+                    {
+                        "context.chunk_count": len(results),
+                        "context.character_count":
+                            len(context),
+                    }
+                )
+                set_output(
+                    context_span,
+                    {
+                        "chunk_count": len(results),
+                        "character_count": len(context),
+                    }
+                )
 
             with tracer.start_as_current_span(
                 "rag.build_prompt",
